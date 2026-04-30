@@ -54,7 +54,16 @@ pipeline {
 
         stage('Container Security Scan') {
             steps {
-                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --exit-code 1 --severity CRITICAL ${APP_NAME}:latest"
+                sh """
+                docker run --rm \
+                  -v /var/run/docker.sock:/var/run/docker.sock \
+                  aquasec/trivy image \
+                  --timeout 20m \
+                  --scanners vuln \
+                  --exit-code 1 \
+                  --severity CRITICAL \
+                  ${APP_NAME}:latest
+                """
             }
         }
 
